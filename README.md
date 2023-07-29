@@ -2,8 +2,6 @@
 
 # Server
 
-[Link text Here](https://link-url-here.org)
-
 - [Prisma used to connect to MySQL backend database](https://www.prisma.io/docs)
 - [Express.js used as the backend API layer](https://expressjs.com/)
 - [Zod used as a Validation Library](https://zod.dev/)
