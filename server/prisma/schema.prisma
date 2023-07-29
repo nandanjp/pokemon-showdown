@@ -1,0 +1,281 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Ability {
+  id Int @id @default(autoincrement())
+  effect String
+  isMainSeries Boolean
+  name String @unique
+  pokemon PokemonAbilities[]
+
+  generationId Int
+  generation Generation @relation(fields: [generationId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  @@unique([id, name])
+}
+
+model Gender {
+  id Int @id @default(autoincrement())
+  name String
+  pokemon Pokemon[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Generation {
+  id Int @id @default(autoincrement())
+  mainGame String
+  name String
+  pokemon Pokemon[]
+  abilities Ability[]
+  moves Move[]
+  locations Location[]
+  region Region[]
+  types Type[]
+  version_groups VersionGroup
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Location {
+  id Int @id @default(autoincrement())
+  name String
+  generationId Int
+  generation Generation @relation(fields: [generationId], references: [id])
+  regionId Int
+  region Region @relation(fields: [regionId], references: [id]) 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Move {
+  id Int @id @default(autoincrement())
+  accuracy Int
+  damageClass DamageClass
+  generationId Int
+  generation Generation @relation(fields: [generationId], references: [id])
+  name String
+  power Int?
+  pp Int
+  priority Int
+  typeId Int
+  type Type @relation(fields: [typeId], references: [id])
+  pokemon PokemonMoves[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Nature {
+  id Int @id @default(autoincrement())
+  decreasedStat Stat
+  increasedStat Stat
+  name String
+}
+
+model Region {
+  id Int @id @default(autoincrement())
+  name String
+  generationId Int
+  generation Generation @relation(fields: [generationId], references: [id])
+  locations Location[]
+  version_group VersionGroup
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Type {
+  id Int @id @default(autoincrement())
+  name Types
+  generationId Int
+  generation Generation @relation(fields: [generationId], references: [id])
+  pokemonId Int
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  moves Move[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Pokemon {
+  id Int @id @default(autoincrement())
+  generationId Int
+  generation Generation @relation(fields: [generationId], references: [id])
+  genderId Int
+  gender Gender @relation(fields: [genderId], references: [id])
+  nature Natures
+
+  types Type[]
+  abilities PokemonAbilities[]
+  moves PokemonMoves[]
+
+  baseExperience Int
+  gameIndex Int
+  height Int
+  name String
+  order Int
+  backSprite String
+  backShinySprite String
+  frontDefault String
+  frontShinySprite String
+  hpStat Int
+  attackStat Int
+  defenseStat Int
+  specialAttackStat Int
+  specialDefenseStat Int
+  speedStat Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+
+model PokemonAbilities {
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  pokemonId Int //relation scalar field
+  ability Ability @relation(fields: [abilityId], references: [id])
+  abilityId Int //relation scalar field
+  is_hidden Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  @@id([pokemonId, abilityId])
+}
+
+model PokemonMoves {
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  pokemonId Int
+  moves Move @relation(fields: [moveId], references: [id])
+  moveId Int
+  learnedAt Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  @@id([pokemonId, moveId])
+}
+
+enum Game {
+  RED
+  BLUE
+  YELLOW
+  GOLD
+  SILVER
+  CRYSTAL
+  RUBY
+  SAPPHIRE
+  EMERALD
+  FIRERED
+  LEAFGREEN
+  DIAMOND
+  PEARL
+  PLATINUM
+  HEARTGOLD
+  SOULSILVER
+  BLACK
+  WHITE
+  X
+  Y
+  SUN
+  MOON
+  ULTRASUN
+  ULTRAMOON
+  SWORD
+  SHIELD
+  SCARLET
+  VIOLET
+}
+
+enum Types {
+  BUG
+  DRAGON
+  ELECTRIC
+  FIGHTING
+  FIRE
+  FLYING
+  GHOST
+  GRASS
+  GROUND
+  ICE
+  NORMAL
+  ROCK
+  POISON
+  PSYCHIC
+  WATER
+}
+
+enum VersionGroup {
+  RED_BLUE
+  YELLOW
+  GOLD_SILVER
+  CRYSTAL
+  RUBY_SAPPHIRE
+  EMERALD
+  FIRERED_LEAFGREEN
+  DIAMOND_PEARL
+  PLATINUM
+  HEARTGOLD_SOULSILVER
+  BLACK_WHITE
+  BLACK2_WHITE2
+  X_Y
+  OMEGARUBY_ALPHASAPPHIRE
+  SUN_MOON
+  ULTRASUN_ULTRAMOON
+  SWORD_SHIELD
+  SCARLET_VIOLET
+}
+
+enum DamageClass {
+  PHYSICAL
+  SPECIAL
+  STATUS
+}
+
+enum Natures {
+  HARDY
+  BOLD
+  MODEST
+  CALM
+  TIMID
+  LONELY
+  DOCILE
+  MILD
+  GENTLE
+  HASTY
+  ADAMANT
+  IMPISH
+  BASHFUL
+  CAREFUL
+  RASH
+  JOLLY
+  NAUGHTY
+  LAX
+  QUIRKY
+  NAIVE
+}
+
+enum Stat {
+  HP
+  ATTACK
+  DEFENSE
+  SPECIAL_ATTACK
+  SPECIAL_DEFENSE
+  SPEED
+}
